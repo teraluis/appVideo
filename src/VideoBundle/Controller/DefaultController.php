@@ -92,7 +92,7 @@ class DefaultController extends Controller
         $surname = isset($json['surname'])? $json['surname']:null;
         $image = isset($json['image'])? $json['image']:null;
         $role = isset($json['role'])? $json['role']:null;
-        $createdAt = date("Y-m-d H:i:s");   
+        $createdAt = new \DateTime("now");   
         $user = new Users();
         $user->setName($name);
         $user->setSurname($surname);
@@ -101,7 +101,6 @@ class DefaultController extends Controller
         $user->setImage($image);
         $user->setRole($role);
         $user->setCreatedAt($createdAt);        
-        var_dump($user->getCreatedAt());die();
         $entityManager = $this->getDoctrine()->getManager();
         $emailConstraint = new Assert\Email();
         $nameConstraint = new Assert\Regex(['pattern' => '/^\w+/']);
