@@ -2,8 +2,6 @@
 
 namespace AppBundle\Services;
 
-use Symfony\Component\HttpKernel\Bundle\Bundle;
-
 class Helpers {
     public function json($data){
         $normalizers = array(new \Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer);
