@@ -11,12 +11,16 @@ use Firebase\JWT\JWT;
 class JwtAuth {
    
     public  $manager;
+    public  $key;
+    public  $hash;
     public function __construct($manager) {
         $this->manager = $manager;
+        $this->key = "secret-key2020";
+        $this->hash = "HS256";
     }
     
     public function signup($email, $password, $getHash = null){
-        $key = "secret-key-2020";
+        $key = $this->key;
         $user = $this->manager->getRepository('VideoBundle:Users')->findOneBy(
                 array(
                     "email" => $email,
@@ -37,19 +41,56 @@ class JwtAuth {
                 "exp" => time() + (7*24*60*60)
                 
             );
-            $jwt = $this::encode($token, $key, "HS256");
-            $decoded = $this::decode($jwt, $key, array('HS256'));
+            $jwt = $this::encode($token, $key, $this->hash);
+            $decoded = $this::decode($jwt, $key, array($this->hash));
             
             if($getHash != null){
                 return $jwt;
             }else {
                 return $decoded;
             }
-            //return array("status" => "succeess","token" => "2123545");
         }else {
             return array("status" => "error","data" => "Login failed !!");
         }       
     }
+    
+    public function getHash($jwt,$getIdentity = false) {
+        $key = $this->key;
+        $auth = false;
+        
+        try {
+            $decoded = $this->decode($jwt, $key, array($this->hash));
+        } catch (\DomainException $e) {
+            $auth = false;           
+        }
+        if(isset($decoded->id)) {
+            $auth = true;
+        }
+        if($getIdentity){
+            return $decoded;
+        }else {
+            return $auth;
+        }
+    }
+    
+    public function checkToken($jwt,$getIdentity = false) {
+        $key = $this->key;
+        $auth = false;
+        
+        try {
+            $decoded = $this->decode($jwt, $key, array($this->hash));
+        } catch (\DomainException $e) {
+            $auth = false;           
+        }
+        if(isset($decoded->id)) {
+            $auth = true;
+        }
+        if($getIdentity){
+            return $decoded;
+        }else {
+            return $auth;
+        }
+    }    
     const ASN1_INTEGER = 0x02;
     const ASN1_SEQUENCE = 0x10;
     const ASN1_BIT_STRING = 0x03;
